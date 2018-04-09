@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.business.master.dao.SystemLogMapper">
+  <resultMap id="BaseResultMap" type="com.business.master.model.SystemLog">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="method" jdbcType="VARCHAR" property="method" />
+    <result column="logType" jdbcType="VARCHAR" property="logType" />
+    <result column="requestIp" jdbcType="VARCHAR" property="requestIp" />
+    <result column="exceptioncode" jdbcType="VARCHAR" property="exceptioncode" />
+    <result column="exceptionDetail" jdbcType="VARCHAR" property="exceptionDetail" />
+    <result column="params" jdbcType="VARCHAR" property="params" />
+    <result column="createBy" jdbcType="VARCHAR" property="createBy" />
+    <result column="createDate" jdbcType="TIMESTAMP" property="createDate" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, description, method, logType, requestIp, exceptioncode, exceptionDetail, params, 
+    createBy, createDate
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from system_log
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from system_log
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.business.master.model.SystemLog">
+    insert into system_log (id, description, method, 
+      logType, requestIp, exceptioncode, 
+      exceptionDetail, params, createBy, 
+      createDate)
+    values (#{id,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{method,jdbcType=VARCHAR}, 
+      #{logType,jdbcType=VARCHAR}, #{requestIp,jdbcType=VARCHAR}, #{exceptioncode,jdbcType=VARCHAR}, 
+      #{exceptionDetail,jdbcType=VARCHAR}, #{params,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, 
+      #{createDate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.business.master.model.SystemLog">
+    insert into system_log
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="description != null">
+        description,
+      </if>
+      <if test="method != null">
+        method,
+      </if>
+      <if test="logType != null">
+        logType,
+      </if>
+      <if test="requestIp != null">
+        requestIp,
+      </if>
+      <if test="exceptioncode != null">
+        exceptioncode,
+      </if>
+      <if test="exceptionDetail != null">
+        exceptionDetail,
+      </if>
+      <if test="params != null">
+        params,
+      </if>
+      <if test="createBy != null">
+        createBy,
+      </if>
+      <if test="createDate != null">
+        createDate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="method != null">
+        #{method,jdbcType=VARCHAR},
+      </if>
+      <if test="logType != null">
+        #{logType,jdbcType=VARCHAR},
+      </if>
+      <if test="requestIp != null">
+        #{requestIp,jdbcType=VARCHAR},
+      </if>
+      <if test="exceptioncode != null">
+        #{exceptioncode,jdbcType=VARCHAR},
+      </if>
+      <if test="exceptionDetail != null">
+        #{exceptionDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="params != null">
+        #{params,jdbcType=VARCHAR},
+      </if>
+      <if test="createBy != null">
+        #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.business.master.model.SystemLog">
+    update system_log
+    <set>
+      <if test="description != null">
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="method != null">
+        method = #{method,jdbcType=VARCHAR},
+      </if>
+      <if test="logType != null">
+        logType = #{logType,jdbcType=VARCHAR},
+      </if>
+      <if test="requestIp != null">
+        requestIp = #{requestIp,jdbcType=VARCHAR},
+      </if>
+      <if test="exceptioncode != null">
+        exceptioncode = #{exceptioncode,jdbcType=VARCHAR},
+      </if>
+      <if test="exceptionDetail != null">
+        exceptionDetail = #{exceptionDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="params != null">
+        params = #{params,jdbcType=VARCHAR},
+      </if>
+      <if test="createBy != null">
+        createBy = #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        createDate = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.business.master.model.SystemLog">
+    update system_log
+    set description = #{description,jdbcType=VARCHAR},
+      method = #{method,jdbcType=VARCHAR},
+      logType = #{logType,jdbcType=VARCHAR},
+      requestIp = #{requestIp,jdbcType=VARCHAR},
+      exceptioncode = #{exceptioncode,jdbcType=VARCHAR},
+      exceptionDetail = #{exceptionDetail,jdbcType=VARCHAR},
+      params = #{params,jdbcType=VARCHAR},
+      createBy = #{createBy,jdbcType=VARCHAR},
+      createDate = #{createDate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

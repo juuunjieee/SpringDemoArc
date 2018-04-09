@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<beans xmlns="http://www.springframework.org/schema/beans"  
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"  
+    xsi:schemaLocation="http://www.springframework.org/schema/beans  
+            http://www.springframework.org/schema/beans/spring-beans-4.1.xsd  
+            http://www.springframework.org/schema/context  
+            http://www.springframework.org/schema/context/spring-context-4.1.xsd">  
+  	
+    <!--引入配置属性文件 -->  
+    <context:property-placeholder location="classpath:config.properties" />  
+  
+    <!--自动扫描含有@Service将其注入为bean -->  
+    <context:component-scan base-package="com.business.master.service" />  
+  	
+  	<!-- <span style="white-space:pre">    </span> --><!-- 自动扫描 -->  
+    <context:annotation-config/>
+    <!-- 配置spring-session -->   
+    <bean class="org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration">   
+        <!-- 过期时间100分钟 -->  
+        <property name="maxInactiveIntervalInSeconds" value="6000"></property>  
+    </bean>    
+    <!-- redis连接池 -->  
+    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig" />   
+          
+    <bean  id="jedisConnectionFactory"  class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"  >    
+        <!-- <property  name="hostName"  value="119.29.106.136" /> -->
+        <property  name="hostName"  value="127.0.0.1" />
+        <property  name="port"  value="6379" />    
+        <property  name="poolConfig"  ref="jedisPoolConfig" />    
+    </bean>
+    
+  	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+         <property name="dataSource" ref="dataSource" />
+         <property name="configLocation" value="classpath:mybatis-config.xml"></property>
+         <property name="typeAliasesPackage" value="com.cnblogs.yjmyzz.entity"></property>
+         <property name="mapperLocations" value="classpath:mybatis/**/*.xml"></property>
+    </bean>
+  	
+  	
+</beans>
