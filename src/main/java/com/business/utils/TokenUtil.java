@@ -1,7 +1,10 @@
 package com.business.utils;
 
+import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,9 +12,14 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.business.master.model.TokenModel;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.org.apache.xml.internal.security.utils.Base64;
   
@@ -124,7 +132,7 @@ public class TokenUtil {
      * @return tokenMap
      */
     public static Map<String,Object> tokenDecode(String token){
-    	//String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJJZCI6MSwiTG9naW5OYW1lIjoiaHlwIiwiVXNlck5hbWUiOiJoeXAifQ==.a7bwIZx6sq9a/M2o7xxgS2CG5Q38vp/Qk298hDz9NQc=";
+    	token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJMb2dpbk5hbWUiOiJoeXAiLCJVc2VyTmFtZSI6Imh5cCIsImlzcyI6ImF1dGgwIiwiSWQiOjEsImV4cCI6MTUyMzQ0MDA1NH0.ocmswv1ULBbMvJRUvJ0OPq4wacCQ-3XsXDrGt6E2q_k";
     	Map<String,Object> tokenMap = new HashMap<String,Object>();
 		try {
 		    DecodedJWT jwt = JWT.decode(token);
@@ -132,7 +140,7 @@ public class TokenUtil {
 		    for(String key : claims.keySet()){
 		    	String str = claims.get(key).asString();
 		    	if(str==null){
-		    		Integer i = claims.get(key).asInt();
+		    		Long i = claims.get(key).asLong();
 		    		if(i!=null){
 		    			tokenMap.put(key, i);
 		    		}
@@ -148,5 +156,48 @@ public class TokenUtil {
 			exception.printStackTrace();
 		}
 		return tokenMap;
+    }
+    public static void decodeToken(String token){
+    	token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1MjM0MzYzODAsImhvc3RhZGRyZXNzIjoiMTE5LjEyOS4yMjcuNSIsImhvc3RuYW1lIjoiMTE5LjEyOS4yMjcuNSJ9._tTPScYwUZImYXIkiXPBxrbHzMziYZqV-5yJODYVwfc";
+    	try {
+    	    Algorithm algorithm = Algorithm.HMAC256("secret");
+    	    JWTVerifier verifier = JWT.require(algorithm)
+    	        .withIssuer("auth0")
+    	        .build(); //Reusable verifier instance
+    	    DecodedJWT jwt = verifier.verify(token);
+    	    System.out.println(jwt);
+    	} catch (UnsupportedEncodingException exception){
+    	    //UTF-8 encoding not supported
+    		exception.printStackTrace();
+    	} catch (JWTVerificationException exception){
+    	    //Invalid signature/claims
+    		exception.printStackTrace();
+    	}
+    }
+    public static String createToken(TokenModel tm){
+    	try {
+    		Date date = new Date(System.currentTimeMillis());
+    		Calendar cal = Calendar.getInstance();
+    		cal.setTime(date);
+    		cal.add(Calendar.SECOND, 120);
+    		date = cal.getTime();
+    	    Algorithm algorithm = Algorithm.HMAC256("secret");
+    	    String token = JWT.create()
+    	        .withIssuer("auth0")
+    	        .withClaim("Id", tm.getId())
+    	        .withClaim("LoginName", tm.getLoginName())
+    	        .withClaim("UserName", tm.getUserName())
+    	        .withExpiresAt(date)
+    	        .sign(algorithm);
+    	    System.out.println(token);
+    	    return token;
+    	} catch (UnsupportedEncodingException exception){
+    	    //UTF-8 encoding not supported
+    		exception.printStackTrace();
+    	} catch (JWTCreationException exception){
+    	    //Invalid Signing configuration / Couldn't convert Claims.
+    		exception.printStackTrace();
+    	}
+		return null;
     }
 }

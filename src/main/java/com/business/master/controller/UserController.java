@@ -22,9 +22,12 @@ import com.business.master.annotation.Log;
 import com.business.master.model.TokenModel;
 import com.business.master.model.UserInfo;
 import com.business.master.service.UserService;
+import com.business.utils.JedisUtil;
+import com.business.utils.StringUtil;
 import com.business.utils.TokenUtil;
 import com.business.utils.PropUtils;
 import com.business.utils.ResponseData;
+import com.business.utils.WapInterface;
   
 /**   
  * 创建时间：2017-12-28 下午1:17:27   
@@ -75,7 +78,7 @@ public class UserController {
         UserInfo userInfo = userService.getUserById(userId);
         mv.addObject("userInfo", userInfo);
         mv.addObject("attr", "123");*/
-        mv.setViewName("/login/login.jsp");
+        mv.setViewName("/jsp/login/login.jsp");
         return mv;
     } 
       
@@ -92,30 +95,33 @@ public class UserController {
     public ResponseData login(HttpServletRequest request) {
     	//    	Properties conf = PropUtils.loadProps("config.properties");
 //    	String jedisIp = PropUtils.getString(PropUtils.loadProps("config.properties"),"redis_ip","");
-    	Jedis jedis = new Jedis(PropUtils.getString(PropUtils.loadProps("config.properties"),"redis_ip",""), 6379);
-    	String username = request.getParameter("username");
+    	Jedis jedis = JedisUtil.newJedis();
+    	String username = "hyp";
     	String loginname = request.getParameter("loginname");
     	String password = request.getParameter("pwd");
     	ResponseData responseData = new ResponseData();
         if ("hyp".equals(loginname) && "123456".equals(password)) {  
         	responseData.setSuccess(true);
-        	responseData.setCode(200);
+        	responseData.setCode(WapInterface.SUCCESS);
         	responseData.setMsg("登录成功");
             responseData.putDataValue("UserName", username);
             responseData.putDataValue("password", password);
             responseData.putDataValue("LoginTime", new Date());
-            TokenModel tm = new TokenModel(1,loginname,username);
-            //String token = JWT.sign(tm, 30L * 24L * 3600L * 1000L); 
-            String token;
+            long nowMillis = System.currentTimeMillis();
+            long expMillis = nowMillis + 1000*60;//设置token六十秒过期
+            TokenModel tm = new TokenModel(1,loginname,username,expMillis);
+            String token = "";
 			try {
-				token = TokenUtil.overWriteSign(tm);
+				token = TokenUtil.createToken(tm);
+				//TokenUtil.decodeToken(token);
 				Map<String,Object> map = TokenUtil.tokenDecode(token);
 				System.out.println(map);
-				if (token != null) {  
-	                responseData.setDetail(token);  
+				//jedis.hset("data", "token", token);
+				//jedis.expire("data", 60);
+				if (StringUtil.isNotEmpty(token)) {  
+	                responseData.putDataValue("token", token);
 	            }
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
             jedis.hset("user", "username", username);  
@@ -126,30 +132,5 @@ public class UserController {
         }  
         return responseData;
     }
-    
-    
-    /*public static String Hmacsha256(String secret, String message) throws NoSuchAlgorithmException, InvalidKeyException {
-        Mac hmac_sha256 = Mac.getInstance(MAC_INSTANCE_NAME);
-        SecretKeySpec key = new SecretKeySpec(secret.getBytes(), MAC_INSTANCE_NAME);
-        hmac_sha256.init(key);
-        byte[] buff = hmac_sha256.doFinal(message.getBytes());
-        return Base64.encodeBase64URLSafeString(buff);
-    }
-
-    // java jwt
-    public void testJWT(TokenModel object) throws InvalidKeyException, NoSuchAlgorithmException, JsonGenerationException, JsonMappingException, IOException {
-        String secret = "07a23553-976c";
-        String header = "{\"typ\":\"JWT\",\"alg\":\"HS256\"}";
-        //String claim = "{\"iss\":\"cnooc\", \"sub\":\"yrm\", \"username\":\"yrm\", \"admin\":true}";
-        ObjectMapper mapper = new ObjectMapper();  
-        String claim = mapper.writeValueAsString(object);
-        //String claim = "{\"Id\":1,\"UserName\":\"hyp\",\"LoginName\":\"hyp\"}";
-        String base64Header = Base64.encodeBase64URLSafeString(header.getBytes());
-        String base64Claim = Base64.encodeBase64URLSafeString(claim.getBytes());
-        String signature = Hmacsha256(secret, base64Header + "." + base64Claim);
-        
-        String jwt = base64Header + "." + base64Claim  + "." + signature;
-        System.out.println(jwt);
-    }*/
     
 }

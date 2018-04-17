@@ -4,13 +4,9 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>登录界面</title>
+<title>没有权限</title>
 </head>
 <body>
-	<form action="login" method="post">
-		用户名：<input id="userName" name="username" type="text" />
-		密 码：<input id="password" name="password" type="password" />
-		<input value="提交" type="submit">
-	</form>
+	<h1>该用户没有该权限</h1>
 </body>
 </html>

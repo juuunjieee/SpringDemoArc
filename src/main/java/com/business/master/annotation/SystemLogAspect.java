@@ -27,6 +27,7 @@ import redis.clients.jedis.Jedis;
 
 import com.business.master.model.SystemLog;
 import com.business.master.service.SystemLogService;
+import com.business.utils.JedisUtil;
 import com.business.utils.PropUtils;
 import com.business.utils.StringUtil;
 
@@ -96,7 +97,7 @@ public class SystemLogAspect {
      */  
     @After("controllerAspect()")  
     public  void after(JoinPoint joinPoint) {  
-    	Jedis jedis = new Jedis(PropUtils.getString(PropUtils.loadProps("config.properties"),"redis_ip",""), 6379);
+    	Jedis jedis = JedisUtil.newJedis();
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();  
         String username = jedis.hget("user", "username");
         String ip = request.getRemoteAddr().equals("0:0:0:0:0:0:0:1")?"::1":request.getRemoteAddr();
@@ -172,7 +173,7 @@ public class SystemLogAspect {
      */  
      @AfterThrowing(pointcut = "controllerAspect()", throwing="e")  
      public  void doAfterThrowing(JoinPoint joinPoint, Throwable e) {  
-		 Jedis jedis = new Jedis(PropUtils.getString(PropUtils.loadProps("config.properties"),"redis_ip",""), 6379);
+    	 Jedis jedis = JedisUtil.newJedis();
 	     HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();  
 	     String username = jedis.hget("user", "username");
 	     String params = ""; 

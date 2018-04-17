@@ -14,11 +14,15 @@ public class TokenModel {
 	@JsonProperty("UserName") 
 	private String userName;
 	
-	public TokenModel(int id,String userName,String loginName) {
+	@JsonProperty("Exp") 
+	private long exp;
+	
+	public TokenModel(int id,String userName,String loginName,long exp) {
 		super();
 		this.loginName = loginName;
 		this.userName = userName;
 		this.id = id;
+		this.exp = exp;
 	}
 
 	public TokenModel() {
@@ -49,5 +53,11 @@ public class TokenModel {
 		this.id = id;
 	}
 
-	
+	public long getExp() {
+		return exp;
+	}
+
+	public void setExp(long exp) {
+		this.exp = exp;
+	}
 }
